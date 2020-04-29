@@ -1,0 +1,11 @@
+---
+applications:
+  - name: app-python-redis
+    memory: 128MB
+    disk_quota: 256MB
+    random-route: true
+    buildpack: python_buildpack
+    command: python app.py
+    services:
+      - redis-aws-ha
+      - redis-k8-ha
