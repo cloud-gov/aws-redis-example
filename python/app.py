@@ -6,24 +6,26 @@ import json
 app = Flask(__name__)
 
 # Get port from environment variable or choose 8080 as local default
-port = int(os.getenv("PORT", 8080))
+port = int(os.getenv('PORT', 8080))
+
+redis_config = dict(host='localhost', port=6379, password='')
 
 # Get Redis credentials from CF service
 if 'VCAP_SERVICES' in os.environ:
     services = json.loads(os.getenv('VCAP_SERVICES'))
-    aws_redis_config = services['redis'][0]['credentials']
-    aws_redis_config['port'] = int(aws_redis_config['port'])
-    del aws_redis_config['uri']
-else:
-    aws_redis_config = dict(hostname='localhost', port=6379, password='')
+    redis_credentials = services['redis'][0]['credentials']
+
+    redis_config['host'] = redis_credentials['host']
+    redis_config['port'] = int(redis_credentials['port'])
+    redis_config['password'] = redis_credentials['password']
+    redis_config['ssl'] = True
+    redis_config['ssl_cert_reqs'] = None
 
 # Connect to redis
 try:
-    client = redis.Redis(**aws_redis_config, ssl_cert_reqs=None, ssl=True)
+    client = redis.Redis(**redis_config)
 except redis.ConnectionError:
     client = None
-
-print(vars(client))
 
 @app.route('/')
 def keys():
@@ -38,7 +40,7 @@ def keys():
 @app.route('/<key>')
 def get_current_values(key):
     try:
-        result = client.lrange(key, 0, -1)
+        result = client.mget(key)
         message = f'Values: {str(result)}'
         return message
     except Exception as error:
