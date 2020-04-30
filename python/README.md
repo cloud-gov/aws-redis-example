@@ -43,6 +43,8 @@ redis_config['password'] = redis_credentials['password']
 redis_config['ssl'] = True ## Add the key `ssl` set to `True`
 redis_config['ssl_cert_reqs'] = None ## Add the key `ssl_cert_reqs` set to `None`
 
+client = redis.Redis(**redis_config)
+
 
 ## The Redis `client` is ready to be used
 ```

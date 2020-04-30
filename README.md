@@ -3,8 +3,9 @@
 ## About
 
 This repository has a series of examples for migrating your cloud.gov applications
-from using the `redis32` service running on the `standard-ha`, `standard`, and `micro` to the
-`redis` service working on the `aws-redis` plan.
+from using the `redis32` service running on the `standard-ha`, `standard`, and `micro` plans to the
+`redis` service running on the `redis-5node`, `redis-3node`, and `redis-single` plans powered by
+[AWS ElastiCache Redis](https://aws.amazon.com/elasticache/redis/).
 
 ## Examples
 

@@ -38,7 +38,7 @@ app.get('/:key', (req, res) => {
     });
 });
 
-app.get('/:key/:value', (req, res) => {
+app.post('/:key/:value', (req, res) => {
   const { key, value } = req.params;
   return client.set(key, value)
     .then(result => {

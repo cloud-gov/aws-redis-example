@@ -47,11 +47,11 @@ def get_current_values(key):
         print(error)
         return 'Error'
 
-@app.route('/<key>/<s>')
-def add_value(key, s):
+@app.route('/<key>/<value>', methods=['POST'])
+def add_value(key, value):
     try:
-        client.rpush(key, s)
-        return f'Added {s} to {key}.'
+        client.rpush(key, value)
+        return f'Added {value} to {key}.'
     except Exception as error:
         print(error)
         return 'Error'
