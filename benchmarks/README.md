@@ -47,10 +47,10 @@ Finally, we will run the benchmarking tasks.
 
 ```
 ## Testing the AWS Redis cluster
-$ cf run-task redis-benchmarks "py.test --service-name redis"
+$  cf run-task redis-benchmarks "./run --service-name redis"
 
 ## Testing the K8 Redis cluster
-$ cf run-task redis-benchmarks "py.test --service-name redis32"
+$  cf run-task redis-benchmarks "./run --service-name redis32"
 
 ## View the logs of the benchmark results
 $ cf logs --recent redis-benchmarks
