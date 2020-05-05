@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-sn",
+    "--service-name",
+    dest="service_name",
+    required=True,
+    type=str,
+    help="Run benchmark tests on a Redis service with the service name"
+)
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+    os.system("ls")
+    os.system((f'py.test --service-name {args.service_name}'))

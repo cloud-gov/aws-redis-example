@@ -1,0 +1,11 @@
+---
+applications:
+  - name: app-node-redis
+    memory: 128MB
+    disk_quota: 256MB
+    random-route: true
+    buildpack: nodejs_buildpack
+    command: node app.js
+    services:
+      - redis-aws-ha
+      - redis-k8-ha

@@ -1,0 +1,31 @@
+version: "3"
+services:
+  benchmarks:
+    build:
+      context: ./benchmarks
+      dockerfile: Dockerfile
+    working_dir: /usr/src/app
+    volumes:
+      - ./benchmarks:/usr/src/app
+    depends_on:
+      - redis
+  node:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    working_dir: /usr/src/app
+    volumes:
+      - ./node:/usr/src/app
+    depends_on:
+      - redis
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    working_dir: /usr/src/app
+    volumes:
+      - ./python:/usr/src/app
+    depends_on:
+      - redis
+  redis:
+    image: redis

@@ -2,13 +2,26 @@
 
 ## About
 
-This repository has a series of examples of migrating your cloud.gov applications
-from using the `redis32` service running on the `standard-ha`, `standard`, and `micro` to the
-`redis` service working on the `aws-redis` plan.
+This repository has a series of examples for migrating your cloud.gov applications
+from using the `redis32` service running on the `standard-ha`, `standard`, and `micro` plans to the
+`redis` service running on the `redis-5node`, `redis-3node`, and `redis-single` plans powered by
+[AWS ElastiCache Redis](https://aws.amazon.com/elasticache/redis/).
 
 ## Examples
 
-WIP
+The following is a list of different language examples for connecting and using the updated Redis service
+offering which leverages AWS ElastiCache Redis.
+
+- [Python](./python/README.md)
+- [Nodejs](./node/README.md)
+- More to come...
+
+## Additional AWS ElastiCache Redis resources
+
+- [What Is Amazon ElastiCache for Redis](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.html)
+- The new service broker will create new Redis clusters with
+  [at-rest encryption](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/at-rest-encryption.html) and
+  [in-Transit encryption](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/in-transit-encryption.html)
 
 ## Contributing
 
