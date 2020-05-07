@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+
+
+parser = argparse.ArgumentParser(
+    description='Migrating your CF Redis service to the AWS ElastiCache Redis service.'
+)
+
+
+parser.add_argument(
+    'command',
+    choices=['migrate', 'test'],
+    type=str,
+    help=(
+        f'Command to migrate data from the legacy CF Redis service'
+        f'to the new CF AWS ElastiCache Redis service.'
+    )
+)
+
+
+parser.add_argument(
+    "-s",
+    "--src",
+    dest="src_redis",
+    type=str,
+    help="The name of the source Redis service"
+)
+
+
+parser.add_argument(
+    "-d",
+    "--dest",
+    dest="dest_redis",
+    type=str,
+    help="The name of the destination Redis service"
+)
+
+
+def run_migrations(src = str, dest = str):
+    print(src, dest)
+
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+    print(args.src_redis, args.dest_redis)
