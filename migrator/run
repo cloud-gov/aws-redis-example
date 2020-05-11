@@ -2,46 +2,87 @@
 
 import os
 import argparse
+import time
+from migrator import Migrator
 
 
 parser = argparse.ArgumentParser(
-    description='Migrating your CF Redis service to the AWS ElastiCache Redis service.'
+    description="Migrating your CF Redis service to the AWS ElastiCache Redis service."
 )
-
 
 parser.add_argument(
-    'command',
-    choices=['migrate', 'test'],
+    "command",
+    choices=["migrate", "seed"],
     type=str,
     help=(
-        f'Command to migrate data from the legacy CF Redis service'
-        f'to the new CF AWS ElastiCache Redis service.'
-    )
+        f"Command to migrate data from the legacy CF Redis service"
+        f"to the new CF AWS ElastiCache Redis service."
+    ),
 )
-
 
 parser.add_argument(
     "-s",
     "--src",
     dest="src_redis",
     type=str,
-    help="The name of the source Redis service"
+    help="The name of the source Redis service",
+    required=True,
 )
-
 
 parser.add_argument(
     "-d",
     "--dest",
     dest="dest_redis",
     type=str,
-    help="The name of the destination Redis service"
+    help="The name of the destination Redis service",
+    required=True,
 )
 
+parser.add_argument(
+    "-f",
+    "--flush",
+    dest="flush",
+    action="store_true",
+    help="Flush all keys from the destination Redis",
+)
 
-def run_migrations(src = str, dest = str):
-    print(src, dest)
+parser.add_argument(
+    "-rdk",
+    "--replace-destination-keys",
+    dest="replace_dest_keys",
+    action="store_false",
+    help="Replace keys on destination Redis",
+)
+
+parser.add_argument(
+    "--seed-count",
+    type=int,
+    default=1000,
+    help="The name of the destination Redis service",
+)
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    print(args.src_redis, args.dest_redis)
+
+    migrate = Migrator(
+        args.src_redis,
+        args.dest_redis,
+        flush=args.flush,
+        replace_dest_keys=args.replace_dest_keys,
+    )
+
+    if args.command == "migrate":
+        print(
+            f"Running the migration from {args.src_redis} to {args.dest_redis} Redis service."
+        )
+        start_time = time.perf_counter()
+        migrate.run_migration()
+        end_time = time.perf_counter()
+        print(f"Migrations completed in {(end_time - start_time)}")
+    elif args.command == "seed":
+        print(f"Seeding the source Redis database.")
+        migrate.seed_source(records_per_seed=args.seed_count)
+        print(f'Seeded key count: {len(migrate.src_client.keys("*"))}')
+    else:
+        print("No commands run.")
