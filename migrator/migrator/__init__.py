@@ -1,5 +1,5 @@
-import json
 import os
+from cfenv import AppEnv
 import redis
 
 
@@ -9,19 +9,23 @@ def redis_client(service_name):
     """
     config = dict(host=service_name, port=6379, password="", ssl_cert_reqs=None)
 
+    if service_name is None:
+        return None
+
     try:
         if "VCAP_SERVICES" in os.environ:
-            services = json.loads(os.getenv("VCAP_SERVICES"))
-            service_config = services[service_name][0]["credentials"]
+            env = AppEnv()
+            service = env.get_service(name=service_name)
+            credentials = service.credentials
 
-            if service_config.get("hostname"):
-                config["host"] = service_config["hostname"]
+            if credentials.get("hostname"):
+                config["host"] = credentials["hostname"]
             else:
-                config["host"] = service_config["host"]
+                config["host"] = credentials["host"]
                 config["ssl"] = True
 
-            config["port"] = int(service_config["port"])
-            config["password"] = service_config["password"]
+            config["port"] = int(credentials["port"])
+            config["password"] = credentials["password"]
 
         client = redis.Redis(**config)
     except redis.ConnectionError:
@@ -157,6 +161,9 @@ class Migrator:
             key = f"key-num-ttl-{x}"
             self.src_client.set(key, x * 2)
             self.src_client.expire(key, 1000)
+
+    def flush_source(self):
+        self.src_client.flushall()
 
 
 __version__ = "0.0.1"

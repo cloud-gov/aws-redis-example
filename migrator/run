@@ -7,20 +7,19 @@ from migrator import Migrator
 
 
 parser = argparse.ArgumentParser(
-    description="Migrating your CF Redis service to the AWS ElastiCache Redis service."
+    description="Migrating your CF Redis service to the AWS ElastiCache Redis service.",
 )
 
-parser.add_argument(
-    "command",
-    choices=["migrate", "seed"],
-    type=str,
-    help=(
-        f"Command to migrate data from the legacy CF Redis service"
-        f"to the new CF AWS ElastiCache Redis service."
-    ),
+subparsers = parser.add_subparsers(
+    dest="command", help="Run <command> help for more information."
 )
 
-parser.add_argument(
+## Redis Migration Command
+parser_migrate = subparsers.add_parser(
+    "migrate", help="Migrate Redis services from source to destination."
+)
+
+parser_migrate.add_argument(
     "-s",
     "--src",
     dest="src_redis",
@@ -29,7 +28,7 @@ parser.add_argument(
     required=True,
 )
 
-parser.add_argument(
+parser_migrate.add_argument(
     "-d",
     "--dest",
     dest="dest_redis",
@@ -38,7 +37,7 @@ parser.add_argument(
     required=True,
 )
 
-parser.add_argument(
+parser_migrate.add_argument(
     "-f",
     "--flush",
     dest="flush",
@@ -46,7 +45,7 @@ parser.add_argument(
     help="Flush all keys from the destination Redis",
 )
 
-parser.add_argument(
+parser_migrate.add_argument(
     "-rdk",
     "--replace-destination-keys",
     dest="replace_dest_keys",
@@ -54,7 +53,34 @@ parser.add_argument(
     help="Replace keys on destination Redis",
 )
 
-parser.add_argument(
+## Redis Flush All Command
+parser_seed = subparsers.add_parser(
+    "flush", help="Flush all keys from a Redis service."
+)
+
+parser_seed.add_argument(
+    "-sn",
+    "--service-name",
+    dest="flush_service_name",
+    type=str,
+    help="The name of the Redis service to flush all keys.",
+    required=True,
+)
+
+
+## Redis Seed Command
+parser_seed = subparsers.add_parser("seed", help="Seed a Redis service with test data.")
+
+parser_seed.add_argument(
+    "-sn",
+    "--service-name",
+    dest="seed_service_name",
+    type=str,
+    help="The name of the Redis service to seed.",
+    required=True,
+)
+
+parser_seed.add_argument(
     "--seed-count",
     type=int,
     default=1000,
@@ -65,14 +91,14 @@ parser.add_argument(
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    migrate = Migrator(
-        args.src_redis,
-        args.dest_redis,
-        flush=args.flush,
-        replace_dest_keys=args.replace_dest_keys,
-    )
-
     if args.command == "migrate":
+        migrate = Migrator(
+            args.src_redis,
+            args.dest_redis,
+            flush=args.flush,
+            replace_dest_keys=args.replace_dest_keys,
+        )
+
         print(
             f"Running the migration from {args.src_redis} to {args.dest_redis} Redis service."
         )
@@ -80,9 +106,18 @@ if __name__ == "__main__":
         migrate.run_migration()
         end_time = time.perf_counter()
         print(f"Migrations completed in {(end_time - start_time)}")
+    elif args.command == "flush":
+        migrate = Migrator(args.flush_service_name, None)
+        print(f'Flushing key count: {len(migrate.src_client.keys("*"))}')
+        migrate.flush_source()
+        print(f"All keys flushed from services {args.flush_service_name}.")
+        print(
+            f'{args.flush_service_name} key count: {len(migrate.src_client.keys("*"))}'
+        )
     elif args.command == "seed":
-        print(f"Seeding the source Redis database.")
+        migrate = Migrator(args.seed_service_name, None)
+        print("Seeding the source Redis database.")
         migrate.seed_source(records_per_seed=args.seed_count)
         print(f'Seeded key count: {len(migrate.src_client.keys("*"))}')
     else:
-        print("No commands run.")
+        print('Run "./run --help" for information.')

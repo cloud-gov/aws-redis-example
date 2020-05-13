@@ -63,6 +63,9 @@ $ cf run-task redis-migrator \
         Default: True
         Replaces duplicate keys on destination Redis with source Redis keys/values
 ##
+
+# Note: run `cf run-task redis-migrator "./run --help"` and check the logs for instructions
+#       on how to use the commands.
 ```
 
 ### Removing the migration task
