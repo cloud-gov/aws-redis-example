@@ -9,6 +9,16 @@ services:
       - ./benchmarks:/usr/src/app
     depends_on:
       - redis
+  migrator:
+    build:
+      context: ./migrator
+      dockerfile: Dockerfile
+    working_dir: /usr/src/app
+    volumes:
+      - ./migrator:/usr/src/app
+    depends_on:
+      - redis
+      - legacy-redis
   node:
     build:
       context: ./node
@@ -28,4 +38,6 @@ services:
     depends_on:
       - redis
   redis:
+    image: redis
+  legacy-redis:
     image: redis
