@@ -14,6 +14,7 @@ offering which leverages AWS ElastiCache Redis.
 
 - [Python](./python/README.md)
 - [Nodejs](./node/README.md)
+- [Migrating Redis](./migrator/README.md)
 - More to come...
 
 ## Additional AWS ElastiCache Redis resources
