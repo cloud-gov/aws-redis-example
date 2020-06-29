@@ -54,3 +54,31 @@ client = redis.Redis(**redis_config)
 - The new AWS ElastiCache Redis service credentials has renamed the host name to `host` from `hostname`
 - The `ssl` configuration key must be set to `True`
 - The `ssl_cert_reqs` configuration key must be set to `None`
+
+
+## Creating a Redis connection pool
+
+This following example shows how you can use `redis-py` to connect via to the new Redis service through [connection pools](https://github.com/andymccurdy/redis-py#connection-pools). You may choose to do this in order to have precise control of how connections are managed.
+
+```python
+from redis import ConnectionPool, SSLConnection
+from cfenv import AppEnv
+
+##
+## The new Redis service `redis`
+## Using `cfenv` module to grab the Redis service from VCAP_SERVICES
+##
+redis_service = cfenv.get_service(label=re.compile("redis.*"))
+
+## Instantiate the Redis connection pool
+connection_pool = ConnectionPool(
+    host=redis_service.credentials["host"],
+    port=redis_service.credentials["port"],
+    password=redis_service.credentials["password"],
+    ssl=True,
+    ssl_cert_reqs=None,
+    connection_class=SSLConnection
+)
+
+## The Redis `connection_pool` is ready to be used
+```
