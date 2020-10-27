@@ -13,7 +13,7 @@ redis_config = dict(host='localhost', port=6379, password='')
 # Get Redis credentials from CF service
 if 'VCAP_SERVICES' in os.environ:
     services = json.loads(os.getenv('VCAP_SERVICES'))
-    redis_credentials = services['redis'][0]['credentials']
+    redis_credentials = services['aws-elasticache-redis'][0]['credentials']
 
     redis_config['host'] = redis_credentials['host']
     redis_config['port'] = int(redis_credentials['port'])
@@ -47,14 +47,25 @@ def get_current_values(key):
         print(error)
         return 'Error'
 
-@app.route('/<key>/<value>', methods=['POST'])
+@app.route('/<key>/<value>')
 def add_value(key, value):
     try:
-        client.rpush(key, value)
+        client.append(key, value)
         return f'Added {value} to {key}.'
     except Exception as error:
         print(error)
         return 'Error'
+
+@app.route('/delete')
+def delete():
+    try:
+        client.flushall()
+        return f'Deleted'
+    except Exception as error:
+        print(error)
+        return 'Error'
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port)
