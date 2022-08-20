@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "cfenv": "^1.2.2",
+    "cfenv": "^1.2.4",
     "express": "^4.17.1",
     "ioredis": "^4.16.3"
   }
